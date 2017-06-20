@@ -18,7 +18,7 @@ angular.module('bootstrapLightbox').provider('Lightbox', function () {
    * @name     fullScreenMode
    * @memberOf bootstrapLightbox.Lightbox
    */
-  this.fullScreenMode = false;
+  this.fullScreenMode = true;
 
   /**
    * @param    {*} image An element in the array of images.
@@ -42,6 +42,10 @@ angular.module('bootstrapLightbox').provider('Lightbox', function () {
     return image.caption;
   };
 
+  this.getContentSettings = function(image) {
+    return image.contentSettings;  
+  };
+
   /**
    * Calculate the max and min limits to the width and height of the displayed
    *   image (all are optional). The max dimensions override the min
@@ -62,7 +66,7 @@ angular.module('bootstrapLightbox').provider('Lightbox', function () {
         //             + 15px padding of .modal-body)
         // with the goal of 30px side margins; however, the actual side margins
         // will be slightly less (at 22.5px) due to the vertical scrollbar
-        'maxWidth': dimensions.windowWidth - 92,
+        'maxWidth': dimensions.windowWidth,
         // 126px = 92px as above
         //         + 34px outer height of .lightbox-nav
         'maxHeight': dimensions.windowHeight - 126
@@ -72,7 +76,7 @@ angular.module('bootstrapLightbox').provider('Lightbox', function () {
         // 52px = 2 * (10px margin of .modal-dialog
         //             + 1px border of .modal-content
         //             + 15px padding of .modal-body)
-        'maxWidth': dimensions.windowWidth - 52,
+        'maxWidth': dimensions.windowWidth,
         // 86px = 52px as above
         //        + 34px outer height of .lightbox-nav
         'maxHeight': dimensions.windowHeight - 86
@@ -95,20 +99,20 @@ angular.module('bootstrapLightbox').provider('Lightbox', function () {
     // 400px = arbitrary min width
     // 32px = 2 * (1px border of .modal-content
     //             + 15px padding of .modal-body)
-    var width = Math.max(400, dimensions.imageDisplayWidth + 32);
+    var width = Math.max(300, dimensions.imageDisplayWidth);
 
     // 200px = arbitrary min height
     // 66px = 32px as above
     //        + 34px outer height of .lightbox-nav
-    var height = Math.max(200, dimensions.imageDisplayHeight + 66);
+    var height = Math.max(200, dimensions.imageDisplayHeight + 50 );
 
     // first case:  the modal width cannot be larger than the window width
     //              20px = arbitrary value larger than the vertical scrollbar
     //                     width in order to avoid having a horizontal scrollbar
     // second case: Bootstrap modals are not centered below 768px
-    if (width >= dimensions.windowWidth - 20 || dimensions.windowWidth < 768) {
-      width = 'auto';
-    }
+//    if (width >= dimensions.windowWidth - 20 || dimensions.windowWidth < 768) {
+//      width = 'auto';
+//    }
 
     // the modal height cannot be larger than the window height
     if (height >= dimensions.windowHeight) {
@@ -181,6 +185,7 @@ angular.module('bootstrapLightbox').provider('Lightbox', function () {
     Lightbox.fullScreenMode = this.fullScreenMode;
     Lightbox.getImageUrl = this.getImageUrl;
     Lightbox.getImageCaption = this.getImageCaption;
+    Lightbox.getContentSettings = this.getContentSettings;
     Lightbox.calculateImageDimensionLimits = this.calculateImageDimensionLimits;
     Lightbox.calculateModalDimensions = this.calculateModalDimensions;
     Lightbox.isVideo = this.isVideo;
@@ -330,6 +335,7 @@ angular.module('bootstrapLightbox').provider('Lightbox', function () {
         Lightbox.imageUrl = properties.imageUrl || imageUrl;
         Lightbox.imageCaption = properties.imageCaption ||
           Lightbox.getImageCaption(image);
+        Lightbox.contentSettings = properties.contentSettings || Lightbox.getContentSettings(image);
 
         // restore the loading flag and complete the loading bar
         Lightbox.loading = false;
