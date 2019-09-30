@@ -24,7 +24,7 @@ angular.module('bootstrapLightbox').run(['$templateCache', function($templateCac
   'use strict';
 
   $templateCache.put('lightbox.html',
-    "<div class=modal-body ng-swipe-left=Lightbox.nextImage() ng-swipe-right=Lightbox.prevImage()><div class=lightbox-nav><button class=close aria-hidden=true ng-click=$dismiss()>×</button><div class=btn-group ng-if=\"Lightbox.images.length > 1\"><a class=\"btn btn-xs btn-default\" ng-click=Lightbox.prevImage()>‹ Previous</a> <a ng-href={{Lightbox.imageUrl}} target=_blank class=\"btn btn-xs btn-default\" title=\"Open in new tab\">Open image in new tab</a> <a class=\"btn btn-xs btn-default\" ng-click=Lightbox.nextImage()>Next ›</a></div></div><div class=lightbox-image-container><div class=lightbox-image-caption><span>{{Lightbox.imageCaption}}</span></div><img ng-if=!Lightbox.isVideo(Lightbox.image) lightbox-src={{Lightbox.imageUrl}}><div ng-if=Lightbox.isVideo(Lightbox.image) class=\"embed-responsive embed-responsive-16by9\"><video ng-if=!Lightbox.isSharedVideo(Lightbox.image) lightbox-src={{Lightbox.imageUrl}} controls autoplay></video><embed-video ng-if=Lightbox.isSharedVideo(Lightbox.image) lightbox-src={{Lightbox.imageUrl}} ng-href={{Lightbox.imageUrl}} iframe-id=lightbox-video class=embed-responsive-item><a ng-href={{Lightbox.imageUrl}}>Watch video</a></embed-video></div></div></div>"
+    "<div class=modal-body ng-swipe-left=Lightbox.nextImage() ng-swipe-right=Lightbox.prevImage()><div class=lightbox-nav><button class=close aria-hidden=true ng-click=$dismiss()>×</button><div class=btn-group ng-if=\"Lightbox.images.length > 1\"><a class=\"btn btn-xs btn-default\" ng-click=Lightbox.prevImage()>‹ Previous</a> <a ng-href={{Lightbox.imageUrl}} target=_blank class=\"btn btn-xs btn-default\" title=\"Open in new tab\">Open image in new tab</a> <a class=\"btn btn-xs btn-default\" ng-click=Lightbox.nextImage()>Next ›</a></div></div><div class=lightbox-image-container><div class=lightbox-image-caption><span>{{Lightbox.imageCaption}}</span></div><img ng-if=!Lightbox.isVideo(Lightbox.image) lightbox-src={{Lightbox.imageUrl}}><div ng-if=Lightbox.isVideo(Lightbox.image) class=\"embed-responsive embed-responsive-16by9\"><video ng-if=!Lightbox.isSharedVideo(Lightbox.image) lightbox-src={{Lightbox.imageUrl}} controls autoplay></video><embed-video ng-if=Lightbox.isSharedVideo(Lightbox.image) lightbox-src={{Lightbox.imageUrl}} ng-href={{Lightbox.imageUrl}} iframe-id=lightbox-video class=embed-responsive-item autoplay video-settings={{Lightbox.contentSettings}}><a ng-href={{Lightbox.imageUrl}}>Watch video</a></embed-video></div></div></div>"
   );
 
 }]);
@@ -91,7 +91,7 @@ angular.module('bootstrapLightbox').provider('Lightbox', function () {
    * @name     fullScreenMode
    * @memberOf bootstrapLightbox.Lightbox
    */
-  this.fullScreenMode = false;
+  this.fullScreenMode = true;
 
   /**
    * @param    {*} image An element in the array of images.
@@ -115,6 +115,10 @@ angular.module('bootstrapLightbox').provider('Lightbox', function () {
     return image.caption;
   };
 
+  this.getContentSettings = function(image) {
+    return image.contentSettings;  
+  };
+
   /**
    * Calculate the max and min limits to the width and height of the displayed
    *   image (all are optional). The max dimensions override the min
@@ -135,7 +139,7 @@ angular.module('bootstrapLightbox').provider('Lightbox', function () {
         //             + 15px padding of .modal-body)
         // with the goal of 30px side margins; however, the actual side margins
         // will be slightly less (at 22.5px) due to the vertical scrollbar
-        'maxWidth': dimensions.windowWidth - 92,
+        'maxWidth': dimensions.windowWidth,
         // 126px = 92px as above
         //         + 34px outer height of .lightbox-nav
         'maxHeight': dimensions.windowHeight - 126
@@ -145,7 +149,7 @@ angular.module('bootstrapLightbox').provider('Lightbox', function () {
         // 52px = 2 * (10px margin of .modal-dialog
         //             + 1px border of .modal-content
         //             + 15px padding of .modal-body)
-        'maxWidth': dimensions.windowWidth - 52,
+        'maxWidth': dimensions.windowWidth,
         // 86px = 52px as above
         //        + 34px outer height of .lightbox-nav
         'maxHeight': dimensions.windowHeight - 86
@@ -168,25 +172,25 @@ angular.module('bootstrapLightbox').provider('Lightbox', function () {
     // 400px = arbitrary min width
     // 32px = 2 * (1px border of .modal-content
     //             + 15px padding of .modal-body)
-    var width = Math.max(400, dimensions.imageDisplayWidth + 32);
+    var width = Math.max(300, dimensions.imageDisplayWidth);
 
     // 200px = arbitrary min height
     // 66px = 32px as above
     //        + 34px outer height of .lightbox-nav
-    var height = Math.max(200, dimensions.imageDisplayHeight + 66);
+    var height = Math.max(200, dimensions.imageDisplayHeight + 50 );
 
     // first case:  the modal width cannot be larger than the window width
     //              20px = arbitrary value larger than the vertical scrollbar
     //                     width in order to avoid having a horizontal scrollbar
     // second case: Bootstrap modals are not centered below 768px
-    if (width >= dimensions.windowWidth - 20 || dimensions.windowWidth < 768) {
-      width = 'auto';
-    }
+//    if (width >= dimensions.windowWidth - 20 || dimensions.windowWidth < 768) {
+//      width = 'auto';
+//    }
 
     // the modal height cannot be larger than the window height
-    if (height >= dimensions.windowHeight) {
-      height = 'auto';
-    }
+    // if (height >= dimensions.windowHeight) {
+    //   height = 'auto';
+    // }
 
     return {
       'width': width,
@@ -254,6 +258,7 @@ angular.module('bootstrapLightbox').provider('Lightbox', function () {
     Lightbox.fullScreenMode = this.fullScreenMode;
     Lightbox.getImageUrl = this.getImageUrl;
     Lightbox.getImageCaption = this.getImageCaption;
+    Lightbox.getContentSettings = this.getContentSettings;
     Lightbox.calculateImageDimensionLimits = this.calculateImageDimensionLimits;
     Lightbox.calculateModalDimensions = this.calculateModalDimensions;
     Lightbox.isVideo = this.isVideo;
@@ -403,6 +408,7 @@ angular.module('bootstrapLightbox').provider('Lightbox', function () {
         Lightbox.imageUrl = properties.imageUrl || imageUrl;
         Lightbox.imageCaption = properties.imageCaption ||
           Lightbox.getImageCaption(image);
+        Lightbox.contentSettings = properties.contentSettings || Lightbox.getContentSettings(image);
 
         // restore the loading flag and complete the loading bar
         Lightbox.loading = false;

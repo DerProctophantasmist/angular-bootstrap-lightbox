@@ -115,9 +115,9 @@ angular.module('bootstrapLightbox').provider('Lightbox', function () {
 //    }
 
     // the modal height cannot be larger than the window height
-    if (height >= dimensions.windowHeight) {
-      height = 'auto';
-    }
+    // if (height >= dimensions.windowHeight) {
+    //   height = 'auto';
+    // }
 
     return {
       'width': width,
